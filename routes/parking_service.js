@@ -1,5 +1,5 @@
 const router = require('express').Router(),
-    jwt = require('jsonwebtoken'),
+    { v4: uuid } = require('uuid'),
     Car = require('../models/car');
 
 router.post('/car', async (req, res) => {
@@ -15,14 +15,16 @@ router.post('/car', async (req, res) => {
         if (await Car.findOne({ number, brand }))
             return res.status(403).json({ message: 'Car already exists' });
 
+        const parkingId = uuid();
+
         let car = new Car({
             brand,
-            number
+            number,
+            parkingId
         });
-        car.id= jwt.sign({ id: car._id }, process.env.JWT_SECRET).toString();
 
         await car.save();
-        return res.status(201).json({ message: 'Your new car successfully added to parking lot', parking_id: car.id });
+        return res.status(201).json({ message: 'Your new car successfully added to parking lot', parkingId });
     }
 
     catch (error) {
