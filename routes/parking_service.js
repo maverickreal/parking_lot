@@ -5,7 +5,7 @@ const router = require('express').Router(),
 router.post('/car', async (req, res) => {
     let count = await Car.countDocuments({});
     if (count >= process.env.CAPACITY)
-        return res.status(400).send({ error: 'Parking is full' });
+        return res.status(400).json({ error: 'Parking is full' });
 
     const { brand, number } = req.body;
 
@@ -60,6 +60,20 @@ router.delete('/car', async (req, res) => {
 });
 
 router.get('/car', async (req, res) => {
+
+    if (req.query.parkingIds) {
+        const parkingIds = req.query.parkingIds.split(','),
+            cars = [];
+        for (const id in parkingIds) {
+            const car = await Car.findOne({ parkingId: parkingIds[id] });
+
+            if (!car)
+                return res.status(404).json({ error: 'Some of your Ids do not match!' });
+
+            cars.push({ brand: car.brand, number: car.number, parkingId: car.parkingId });
+        }
+        return res.status(200).json({ message: 'Cars fetched successfully.', cars });
+    }
     const cars = await Car.find();
 
     if (cars.length === 0)
