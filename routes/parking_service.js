@@ -17,7 +17,7 @@ router.post('/car', async (req, res) => {
 
         const parkingId = uuid();
 
-        let car = new Car({
+        const car = new Car({
             brand,
             number,
             parkingId
@@ -30,6 +30,45 @@ router.post('/car', async (req, res) => {
     catch (error) {
         return res.status(500).json({ message: error.message });
     }
+});
+
+router.delete('/car', async (req, res) => {
+    const { parkingId } = req.body;
+
+    if (!parkingId)
+        return res.status(400).json({
+            message: 'Missing parameters'
+        });
+
+    try {
+        const car = await Car.findOne({ parkingId });
+
+        if (!car)
+            return res.status(404).json({ message: 'Car not found' });
+
+        await car.remove();
+        return res.status(200).json({ message: 'Car successfully removed', parkingId });
+    }
+
+    catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
+router.get('/car', async (req, res) => {
+    const cars = await Car.find();
+    if (cars.length === 0)
+        return res.status(404).json({ message: 'Parking lot empty!' });
+
+    for (let car in cars) {
+        cars[car] = {
+            brand: cars[car].brand,
+            number: cars[car].number,
+            parkingId: cars[car].parkingId
+        };
+    }
+
+    return res.status(200).json({ message: 'Cars fetched successfully.', cars });
 });
 
 module.exports = router;
