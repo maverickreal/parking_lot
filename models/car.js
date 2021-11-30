@@ -3,8 +3,8 @@ const mongoose = require('mongoose'),
 
 const car = new schema({
     brand: { type: String, required: true },
-    number: { type: String, required: true },
-    parkingId: { type: String, required: true, unique: true}
+    number: { type: Number, required: true },
+    parkingId: { type: String, required: true, unique: true }
 });
 
 module.exports = mongoose.model('car', car);

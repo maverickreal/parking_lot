@@ -9,6 +9,6 @@ const app = express();
 
 app.use(express.json());
 app.use('/parking-service', require('./routes/parking_service'));
-app.use('/*', (req, res) => res.status(404).json({ message: 'Not Found' }));
+app.use('/*', (req, res) => res.status(404).json({ error: 'Not Found' }));
 
-app.listen(process.env.PORT, () => console.log('server started'));
+app.listen(process.env.PORT);
